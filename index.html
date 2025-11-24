@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual de Bolso - Revisão de Paradigmas</title>
+
+    <!-- Tailwind CSS via CDN para estilização rápida -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Configurações de Fonte -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ESTILOS CRÍTICOS (Fallback para funcionar mesmo sem Tailwind) */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6;
+        margin: 0;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .flex {
+        display: flex;
+      }
+      .h-screen {
+        height: 100vh;
+      }
+      .flex-col {
+        flex-direction: column;
+      }
+      .overflow-hidden {
+        overflow: hidden;
+      }
+
+      /* Animações e Cores */
+      .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .feedback-card {
+        transition: all 0.3s ease;
+      }
+      .correct-bg {
+        background-color: #dcfce7;
+        border: 1px solid #22c55e;
+        color: #14532d;
+      }
+      .wrong-bg {
+        background-color: #fee2e2;
+        border: 1px solid #ef4444;
+        color: #7f1d1d;
+      }
+
+      /* Ajuste de scroll para mobile */
+      #app-container {
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+  </head>
+  <body
+    class="text-gray-800 h-screen flex flex-col overflow-hidden bg-gray-100"
+  >
+    <!-- Header Fixo -->
+    <header class="bg-indigo-700 text-white p-4 shadow-lg z-10 shrink-0">
+      <div
+        class="container mx-auto flex justify-between items-center max-w-2xl"
+      >
+        <h1 class="text-lg font-bold flex items-center gap-2">
+          <i class="fa-solid fa-book-open"></i> Revisão
+        </h1>
+        <button
+          onclick="goHome()"
+          class="text-sm bg-indigo-600 hover:bg-indigo-500 px-3 py-1 rounded transition border border-indigo-500"
+        >
+          <i class="fa-solid fa-house"></i> Início
+        </button>
+      </div>
+    </header>
+
+    <!-- Área de Conteúdo Principal -->
+    <main
+      id="app-container"
+      class="flex-1 overflow-y-auto p-4 pb-20 container mx-auto max-w-2xl relative"
+    >
+      <!-- TELA 1: HOME / MENU -->
+      <div id="view-home" class="fade-in space-y-6">
+        <div
+          class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-500 mb-6"
+        >
+          <h2 class="text-xl font-bold mb-2">Olá, Gilvan!</h2>
+          <p class="text-gray-600 mb-4 text-sm">
+            Seu plano de revisão intensiva focado na metodologia da banca.
+          </p>
+          <div
+            class="flex items-center gap-2 text-xs text-indigo-700 font-bold uppercase tracking-wide"
+          >
+            <i class="fa-solid fa-bullseye"></i> Foco: Sintaxe & Vocabulário
+          </div>
+        </div>
+
+        <div class="grid gap-4">
+          <!-- Botão Metodologia -->
+          <button
+            onclick="showView('view-methodology')"
+            class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between hover:bg-indigo-50 transition border border-gray-200 group cursor-pointer"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="bg-blue-100 w-10 h-10 flex items-center justify-center rounded-full text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition"
+              >
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+              </div>
+              <div class="text-left">
+                <h3 class="font-bold text-gray-800">Metodologia da Banca</h3>
+                <p class="text-xs text-gray-500">O que o examinador quer?</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+          </button>
+
+          <!-- Botão Simulado -->
+          <button
+            onclick="startQuiz()"
+            class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between hover:bg-indigo-50 transition border border-gray-200 group cursor-pointer"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="bg-purple-100 w-10 h-10 flex items-center justify-center rounded-full text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition"
+              >
+                <i class="fa-solid fa-list-check"></i>
+              </div>
+              <div class="text-left">
+                <h3 class="font-bold text-gray-800">Simulado (20 Questões)</h3>
+                <p class="text-xs text-gray-500">Teste com feedback imediato</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+          </button>
+
+          <!-- Botão Discursivas -->
+          <button
+            onclick="showView('view-scenarios')"
+            class="w-full bg-white p-4 rounded-xl shadow-sm flex items-center justify-between hover:bg-indigo-50 transition border border-gray-200 group cursor-pointer"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="bg-orange-100 w-10 h-10 flex items-center justify-center rounded-full text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition"
+              >
+                <i class="fa-solid fa-pen-nib"></i>
+              </div>
+              <div class="text-left">
+                <h3 class="font-bold text-gray-800">Cenários Discursivos</h3>
+                <p class="text-xs text-gray-500">
+                  4 Dicas para questões abertas
+                </p>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- TELA 2: METODOLOGIA -->
+      <div id="view-methodology" class="hidden fade-in space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Análise da Banca</h2>
+
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+          <h3 class="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-spell-check"></i> Vocabulário Técnico
+          </h3>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            Não basta saber fazer. Você precisa saber o nome. <br />Ex:
+            <em>Functor</em> vs <em>Parâmetro</em>,
+            <em>Interface Funcional</em> em Java.
+          </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+          <h3 class="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-microscope"></i> Sintaxe Microscópica
+          </h3>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            Atenção aos detalhes! Um <code>:-</code> é diferente de um
+            <code>.</code>. Parênteses em Lambdas mudam o resultado.
+          </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+          <h3 class="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-scale-balanced"></i> Limitações e Forças
+          </h3>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            Eles adoram perguntar: "Onde isso é bom e onde é ruim?". <br />Ex:
+            Prolog é ótimo para lógica, ruim para aritmética.
+          </p>
+        </div>
+
+        <button
+          onclick="goHome()"
+          class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-bold mt-4 transition"
+        >
+          Voltar
+        </button>
+      </div>
+
+      <!-- TELA 3: SIMULADO QUIZ -->
+      <div id="view-quiz" class="hidden fade-in pb-10">
+        <!-- Barra de Progresso -->
+        <div
+          class="mb-4 flex justify-between items-center text-sm text-gray-500 font-medium"
+        >
+          <span id="quiz-progress-text">Questão 1 de 20</span>
+          <span
+            id="quiz-score"
+            class="font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded"
+            >Acertos: 0</span
+          >
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+          <div
+            id="progress-bar"
+            class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
+            style="width: 5%"
+          ></div>
+        </div>
+
+        <!-- Cartão da Questão -->
+        <div
+          id="question-card"
+          class="bg-white p-6 rounded-xl shadow-md mb-6 border border-gray-100"
+        >
+          <span
+            id="q-tag"
+            class="inline-block bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded mb-3 uppercase font-bold tracking-wide"
+            >Categoria</span
+          >
+          <h3
+            id="q-text"
+            class="text-lg font-bold mb-4 text-gray-800 leading-snug"
+          >
+            Carregando pergunta...
+          </h3>
+
+          <!-- Opções -->
+          <div id="options-container" class="space-y-3">
+            <!-- Botões gerados via JS -->
+          </div>
+        </div>
+
+        <!-- Feedback Area -->
+        <div
+          id="feedback-area"
+          class="hidden p-4 rounded-xl border-l-4 mb-4 feedback-card shadow-sm"
+        >
+          <h4
+            id="feedback-title"
+            class="font-bold text-lg mb-2 flex items-center gap-2"
+          ></h4>
+          <p
+            id="feedback-content"
+            class="text-sm text-gray-800 leading-relaxed"
+          ></p>
+          <button
+            id="next-btn"
+            onclick="nextQuestion()"
+            class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 w-full shadow-lg transition flex items-center justify-center gap-2"
+          >
+            Próxima Questão <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tela de Resultados Finais -->
+      <div id="view-result" class="hidden fade-in text-center space-y-6 pt-10">
+        <div
+          class="inline-block p-6 rounded-full bg-indigo-100 text-indigo-600 text-5xl mb-2 shadow-sm"
+        >
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">Simulado Concluído!</h2>
+          <p class="text-gray-500 text-sm">Resumo da sua performance</p>
+        </div>
+
+        <div class="text-5xl font-extrabold text-gray-800 my-4 tracking-tight">
+          <span id="final-score" class="text-indigo-600">0</span
+          ><span class="text-gray-300 text-3xl">/20</span>
+        </div>
+
+        <p
+          id="final-message"
+          class="text-sm text-gray-600 px-8 leading-relaxed"
+        ></p>
+
+        <button
+          onclick="goHome()"
+          class="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition w-full max-w-xs mx-auto block"
+        >
+          Voltar ao Início
+        </button>
+      </div>
+
+      <!-- TELA 4: CENÁRIOS DISCURSIVOS -->
+      <div id="view-scenarios" class="hidden fade-in space-y-6">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">
+          4 Cenários para Discursivas
+        </h2>
+        <p
+          class="text-sm text-gray-600 mb-4 bg-yellow-50 p-3 rounded border border-yellow-200"
+        >
+          <i class="fa-regular fa-lightbulb text-yellow-600"></i>
+          Clique nos cartões abaixo para revelar a resposta ideal.
+        </p>
+
+        <!-- Cenário 1 -->
+        <div
+          onclick="toggleAccordion('c1')"
+          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-gray-200 transition hover:shadow-md"
+        >
+          <div
+            class="p-4 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-indigo-800 text-sm">
+              1. A Batalha dos Paradigmas
+            </h3>
+            <i class="fa-solid fa-chevron-down text-indigo-400"></i>
+          </div>
+          <div id="c1" class="hidden p-5 bg-white">
+            <p
+              class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2"
+            >
+              A Questão
+            </p>
+            <p
+              class="text-sm italic text-gray-600 mb-4 border-l-2 border-gray-300 pl-3"
+            >
+              "Explique a diferença fundamental entre o Paradigma Imperativo e o
+              Lógico, citando exemplos."
+            </p>
+            <div
+              class="bg-green-50 p-4 rounded border border-green-100 text-sm text-gray-800"
+            >
+              <strong class="text-green-800 block mb-1">Resposta Ideal:</strong>
+              <ul class="list-disc pl-4 space-y-1">
+                <li>
+                  <strong>Imperativo (C/Pascal):</strong> Foca no
+                  <em>como</em> (fluxo de controle e mudança de estado).
+                </li>
+                <li>
+                  <strong>Lógico (Prolog):</strong> Foca no
+                  <em>o que</em> (fatos e regras).
+                </li>
+                <li>
+                  <strong>Aplicação:</strong> Lógico é preferível em IA e
+                  Sistemas Especialistas.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cenário 2 -->
+        <div
+          onclick="toggleAccordion('c2')"
+          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-gray-200 transition hover:shadow-md"
+        >
+          <div
+            class="p-4 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-indigo-800 text-sm">
+              2. Mecanismo de Backtracking
+            </h3>
+            <i class="fa-solid fa-chevron-down text-indigo-400"></i>
+          </div>
+          <div id="c2" class="hidden p-5 bg-white">
+            <p
+              class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2"
+            >
+              A Questão
+            </p>
+            <p
+              class="text-sm italic text-gray-600 mb-4 border-l-2 border-gray-300 pl-3"
+            >
+              "Descreva o backtracking e sua possível ineficiência."
+            </p>
+            <div
+              class="bg-green-50 p-4 rounded border border-green-100 text-sm text-gray-800"
+            >
+              <strong class="text-green-800 block mb-1">Resposta Ideal:</strong>
+              É uma busca em profundidade na árvore de possibilidades. Ao falhar
+              (fail), o sistema "desfaz" a última escolha e tenta outro
+              caminho.<br />
+              <strong>Ineficiência:</strong> Sofre de "explosão combinatória"
+              (tenta milhões de caminhos inúteis) se as regras forem mal
+              escritas.
+            </div>
+          </div>
+        </div>
+
+        <!-- Cenário 3 -->
+        <div
+          onclick="toggleAccordion('c3')"
+          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-gray-200 transition hover:shadow-md"
+        >
+          <div
+            class="p-4 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-indigo-800 text-sm">
+              3. Programação Funcional Moderna
+            </h3>
+            <i class="fa-solid fa-chevron-down text-indigo-400"></i>
+          </div>
+          <div id="c3" class="hidden p-5 bg-white">
+            <p
+              class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2"
+            >
+              A Questão
+            </p>
+            <p
+              class="text-sm italic text-gray-600 mb-4 border-l-2 border-gray-300 pl-3"
+            >
+              "Explique Expressões Lambda e o problema que resolvem."
+            </p>
+            <div
+              class="bg-green-50 p-4 rounded border border-green-100 text-sm text-gray-800"
+            >
+              <strong class="text-green-800 block mb-1">Resposta Ideal:</strong>
+              Resolvem a verbosidade do código. Permitem tratar comportamento
+              (funções) como dados passados para métodos.<br />
+              Ex: <code>botao.addActionListener(e -> print("Oi"))</code> é muito
+              mais curto que Classes Anônimas antigas.
+            </div>
+          </div>
+        </div>
+
+        <!-- Cenário 4 -->
+        <div
+          onclick="toggleAccordion('c4')"
+          class="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer border border-gray-200 transition hover:shadow-md"
+        >
+          <div
+            class="p-4 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-indigo-800 text-sm">
+              4. Modelagem (Prolog)
+            </h3>
+            <i class="fa-solid fa-chevron-down text-indigo-400"></i>
+          </div>
+          <div id="c4" class="hidden p-5 bg-white">
+            <p
+              class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-2"
+            >
+              A Questão
+            </p>
+            <p
+              class="text-sm italic text-gray-600 mb-4 border-l-2 border-gray-300 pl-3"
+            >
+              "'Todo peixe nada. Nemo é um peixe.' Escreva em Prolog."
+            </p>
+            <div
+              class="bg-green-50 p-4 rounded border border-green-100 text-sm text-gray-800 font-mono"
+            >
+              <strong class="text-green-800 block mb-1 font-sans"
+                >Resposta Ideal:</strong
+              >
+              % Fato<br />
+              peixe(nemo).<br /><br />
+              % Regra (Lê-se: X nada SE X for peixe)<br />
+              nada(X) :- peixe(X).<br /><br />
+              % Consulta<br />
+              ?- nada(nemo).
+            </div>
+          </div>
+        </div>
+
+        <button
+          onclick="goHome()"
+          class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-bold mt-4 transition"
+        >
+          Voltar
+        </button>
+      </div>
+    </main>
+
+    <!-- Script da Aplicação -->
+    <script>
+      // --- BASE DE DADOS DAS QUESTÕES (Corrigida) ---
+      const questionsDB = [
+        {
+          id: 1,
+          category: "Paradigmas Gerais",
+          type: "multi",
+          q: "O paradigma imperativo foca no 'como' fazer. Qual linguagem abaixo é puramente imperativa/procedural e não suporta nativamente OO?",
+          options: ["Java", "Python", "C (Padrão ANSI)", "C++"],
+          correct: 2,
+          why: "C é a base do paradigma imperativo procedural. Java, Python e C++ são multiparadigma.",
+        },
+        {
+          id: 2,
+          category: "Conceitos Gerais",
+          type: "reason",
+          q: "I. Linguagens declarativas exigem a descrição do passo a passo.<br>PORQUE<br>II. No paradigma declarativo, o foco é na especificação do resultado ('o que').",
+          options: [
+            "I e II são verdadeiras",
+            "I é falsa, II é verdadeira",
+            "Ambas falsas",
+            "I verdadeira, II falsa",
+          ],
+          correct: 1,
+          why: "A I é falsa pois descreve o paradigma imperativo. A II define corretamente o declarativo.",
+        },
+        {
+          id: 3,
+          category: "Funcional (Python)",
+          type: "multi",
+          q: "Python: <code>r = lambda x, y: x * y + 1</code>. Qual o resultado de <code>print(r(3, 3))</code>?",
+          options: ["9", "10", "7", "Erro"],
+          correct: 1,
+          why: "3 * 3 = 9. 9 + 1 = 10.",
+        },
+        {
+          id: 4,
+          category: "Java 8",
+          type: "multi",
+          q: "Em Java, como se chama a interface que possui apenas um método abstrato (usada em Lambdas)?",
+          options: [
+            "Interface Abstrata",
+            "Interface Associativa",
+            "Interface Funcional",
+            "Interface Lambda",
+          ],
+          correct: 2,
+          why: "Interface Funcional é o termo técnico exigido pela especificação Java (JSR 335).",
+        },
+        {
+          id: 5,
+          category: "Funcional",
+          type: "reason",
+          q: "I. Lambdas promovem código limpo.<br>PORQUE<br>II. São funções anônimas que podem ser definidas inline.",
+          options: [
+            "I e II verdadeiras, II justifica I",
+            "I e II falsas",
+            "I verdadeira, II falsa",
+            "Ambas verdadeiras",
+          ],
+          correct: 0,
+          why: "A concisão (I) é possível justamente graças ao anonimato e sintaxe inline (II).",
+        },
+        {
+          id: 6,
+          category: "Python Lambda",
+          type: "multi",
+          q: "<code>func = (lambda a: (lambda b: a + b))(5)</code>.<br>Resultado de <code>print(func(4))</code>:",
+          options: ["9", "20", "5", "Erro"],
+          correct: 0,
+          why: "Primeira execução fixa a=5 e retorna a função interna. A segunda passa b=4. 5 + 4 = 9.",
+        },
+        {
+          id: 7,
+          category: "Prolog Sintaxe",
+          type: "multi",
+          q: "Em Prolog, qual símbolo denota a condicional 'SE' em uma regra?",
+          options: ["->", "=", ":-", "?"],
+          correct: 2,
+          why: "O ':-' separa a Cabeça (conclusão) do Corpo. Lê-se 'é verdade SE...'.",
+        },
+        {
+          id: 8,
+          category: "Prolog Fatos",
+          type: "multi",
+          q: "Classificação de: <code>gosta(maria, chocolate).</code>",
+          options: ["Regra", "Fato (Proposição Atômica)", "Query", "Variável"],
+          correct: 1,
+          why: "É uma afirmação incondicional (termina com ponto e não tem ':-').",
+        },
+        {
+          id: 9,
+          category: "Prolog Termos",
+          type: "multi",
+          q: "Em <code>pai(joao, pedro)</code>, o termo 'pai' é:",
+          options: ["Átomo", "Parâmetro", "Functor", "Variável"],
+          correct: 2,
+          why: "Functor é o nome da relação. joao e pedro são os parâmetros (átomos).",
+        },
+        {
+          id: 10,
+          category: "Prolog Variáveis",
+          type: "reason",
+          q: "I. Variáveis em Prolog começam com maiúscula ou underscore.<br>PORQUE<br>II. Termos minúsculos são interpretados como átomos (constantes).",
+          options: [
+            "I e II verdadeiras, II justifica I",
+            "I e II falsas",
+            "I verdadeira, II falsa",
+            "Ambas verdadeiras",
+          ],
+          correct: 0,
+          why: "Regra básica. 'joao' é específico (átomo). 'Joao' seria variável.",
+        },
+        {
+          id: 11,
+          category: "Prolog Lógica",
+          type: "multi",
+          q: "Mecanismo que permite ao Prolog voltar a um ponto anterior quando falha:",
+          options: ["Recursão", "Backtracking", "Iteração", "JIT"],
+          correct: 1,
+          why: "Backtracking é a busca em árvore característica do Prolog.",
+        },
+        {
+          id: 12,
+          category: "Prolog Uso",
+          type: "reason",
+          q: "I. Prolog é recomendado para drivers e jogos 3D.<br>PORQUE<br>II. Inferência lógica consome muitos recursos e não é otimizada para aritmética.",
+          options: [
+            "I verdadeira",
+            "I falsa, II verdadeira",
+            "Ambas falsas",
+            "Ambas verdadeiras",
+          ],
+          correct: 1,
+          why: "Prolog é péssimo para jogos/hardware (I falsa) justamente pelo custo da inferência (II verdadeira).",
+        },
+        {
+          id: 13,
+          category: "Prolog Unificação",
+          type: "multi",
+          q: "Fato: <code>homem(socrates).</code><br>Regra: <code>mortal(X) :- homem(X).</code><br>Query: <code>?- mortal(socrates).</code>",
+          options: ["false", "true", "null", "socrates"],
+          correct: 1,
+          why: "Unifica X com socrates -> homem(socrates) é fato -> logo mortal é verdade.",
+        },
+        {
+          // CORRIGIDA: Removida a barra invertida que causava o erro
+          id: 14,
+          category: "Prolog Aritmética",
+          type: "multi",
+          q: "Operador para igualdade aritmética (valores numéricos) em Prolog:",
+          options: ["is", "=", "=:=", "=="],
+          correct: 2,
+          why: "'=' é unificação. 'is' é atribuição. '=:=` compara valores calculados.",
+        },
+        {
+          id: 15,
+          category: "Lógica 1ª Ordem",
+          type: "multi",
+          q: "O quantificador universal (Para todo X...) é implementado em Prolog via:",
+          options: [
+            "Regras com variáveis",
+            "Fatos isolados",
+            "Cut (!)",
+            "Queries simples",
+          ],
+          correct: 0,
+          why: "Uma regra p(X) :- q(X) implica 'Para todo X...'.",
+        },
+        {
+          id: 16,
+          category: "Interpretação",
+          type: "multi",
+          q: "<code>avo(X, Y) :- pai(X, Z), pai(Z, Y).</code> Quem é Z?",
+          options: ["Avô", "Neto", "Intermediário", "Variável anônima"],
+          correct: 2,
+          why: "Z é a ponte. Filho de X e pai de Y (o pai do neto).",
+        },
+        {
+          id: 17,
+          category: "Prolog Ordem",
+          type: "reason",
+          q: "I. A ordem das regras altera a ordem das respostas.<br>PORQUE<br>II. Prolog varre a base top-down e left-to-right.",
+          options: [
+            "I e II verdadeiras e se complementam",
+            "I é falsa",
+            "Ambas falsas",
+            "I verdadeira, II falsa",
+          ],
+          correct: 0,
+          why: "O comportamento procedural do Prolog depende estritamente da ordem de escrita.",
+        },
+        {
+          id: 18,
+          category: "Sintaxe Listas",
+          type: "multi",
+          q: "Estrutura de lista vazia em Prolog:",
+          options: ["( )", "[ ]", "{ }", "null"],
+          correct: 1,
+          why: "[ ] é o padrão para listas vazias.",
+        },
+        {
+          id: 19,
+          category: "Python Tipo",
+          type: "multi",
+          q: "Python é considerada uma linguagem:",
+          options: [
+            "Puramente Funcional",
+            "Puramente OO",
+            "Multiparadigma",
+            "Puramente Imperativa",
+          ],
+          correct: 2,
+          why: "Aceita classes, lambdas e scripts sequenciais.",
+        },
+        {
+          id: 20,
+          category: "Conceitos",
+          type: "multi",
+          q: "Processo de fazer variável X assumir valor 'joao' na consulta:",
+          options: ["Atribuição", "Instanciação", "Unificação", "Compilação"],
+          correct: 2,
+          why: "Em lógica, termos se 'unificam' quando podem ser tornados idênticos.",
+        },
+      ];
+
+      // --- ESTADO DO APP ---
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let isAnswered = false;
+
+      // --- NAVEGAÇÃO ---
+      function showView(viewId) {
+        // Oculta todas as views com classe 'hidden'
+        // O CSS !important garante que funcione mesmo sem Tailwind
+        [
+          "view-home",
+          "view-methodology",
+          "view-quiz",
+          "view-result",
+          "view-scenarios",
+        ].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add("hidden");
+        });
+
+        // Mostra a desejada
+        const target = document.getElementById(viewId);
+        if (target) target.classList.remove("hidden");
+
+        // Scroll para o topo
+        const container = document.getElementById("app-container");
+        if (container) container.scrollTop = 0;
+      }
+
+      function goHome() {
+        showView("view-home");
+      }
+
+      function toggleAccordion(id) {
+        const el = document.getElementById(id);
+        if (el.classList.contains("hidden")) {
+          el.classList.remove("hidden");
+        } else {
+          el.classList.add("hidden");
+        }
+      }
+
+      // --- LÓGICA DO QUIZ ---
+      function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        showView("view-quiz");
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        if (currentQuestionIndex >= questionsDB.length) {
+          finishQuiz();
+          return;
+        }
+
+        const q = questionsDB[currentQuestionIndex];
+        isAnswered = false;
+
+        // Reset UI
+        const feedbackArea = document.getElementById("feedback-area");
+        feedbackArea.classList.add("hidden");
+        feedbackArea.classList.remove("correct-bg", "wrong-bg");
+
+        // Textos
+        document.getElementById("quiz-progress-text").innerText = `Questão ${
+          currentQuestionIndex + 1
+        } de ${questionsDB.length}`;
+        document.getElementById("quiz-score").innerText = `Acertos: ${score}`;
+        document.getElementById("progress-bar").style.width = `${
+          (currentQuestionIndex / questionsDB.length) * 100
+        }%`;
+
+        document.getElementById("q-tag").innerText = q.category;
+        document.getElementById("q-text").innerHTML = q.q;
+
+        // Opções
+        const optsContainer = document.getElementById("options-container");
+        optsContainer.innerHTML = "";
+
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          // Estilo base
+          btn.className =
+            "w-full text-left p-4 rounded-lg border border-gray-200 hover:bg-indigo-50 transition flex items-center gap-3 bg-white cursor-pointer";
+
+          // Evento de clique
+          btn.onclick = () => checkAnswer(idx, btn);
+
+          btn.innerHTML = `
+                    <span class="font-bold text-gray-400 border border-gray-200 rounded w-8 h-8 flex items-center justify-center shrink-0 bg-gray-50">${String.fromCharCode(
+                      65 + idx
+                    )}</span>
+                    <span class="flex-1 text-sm font-medium text-gray-700">${opt}</span>
+                `;
+          optsContainer.appendChild(btn);
+        });
+      }
+
+      function checkAnswer(selectedIndex, btnElement) {
+        if (isAnswered) return;
+        isAnswered = true;
+
+        const q = questionsDB[currentQuestionIndex];
+        const isCorrect = selectedIndex === q.correct;
+        const feedbackArea = document.getElementById("feedback-area");
+        const feedbackTitle = document.getElementById("feedback-title");
+        const feedbackContent = document.getElementById("feedback-content");
+
+        // Atualizar Estilos dos Botões
+        const buttons = document.getElementById("options-container").children;
+
+        // Marca a resposta correta visualmente (sempre mostra qual era a certa)
+        const correctBtn = buttons[q.correct];
+        if (correctBtn) {
+          correctBtn.classList.remove("bg-white", "border-gray-200");
+          correctBtn.classList.add("bg-green-100", "border-green-500");
+          correctBtn
+            .querySelector("span:first-child")
+            .classList.add(
+              "text-green-700",
+              "border-green-500",
+              "bg-green-200"
+            );
+          correctBtn.querySelector("span:first-child").innerHTML =
+            '<i class="fa-solid fa-check"></i>';
+        }
+
+        // Se errou, marca a que o usuário clicou de vermelho
+        if (!isCorrect) {
+          btnElement.classList.remove(
+            "bg-white",
+            "border-gray-200",
+            "hover:bg-indigo-50"
+          );
+          btnElement.classList.add("bg-red-100", "border-red-500");
+          btnElement
+            .querySelector("span:first-child")
+            .classList.add("text-red-700", "border-red-500", "bg-red-200");
+          btnElement.querySelector("span:first-child").innerHTML =
+            '<i class="fa-solid fa-xmark"></i>';
+        } else {
+          score++;
+          document.getElementById("quiz-score").innerText = `Acertos: ${score}`;
+        }
+
+        // Mostrar Feedback
+        feedbackArea.classList.remove("hidden");
+        if (isCorrect) {
+          feedbackArea.classList.add("correct-bg");
+          feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-check text-green-600"></i> Parabéns!`;
+          feedbackContent.innerHTML = `<strong>Resposta Correta.</strong><br>${q.why}`;
+        } else {
+          feedbackArea.classList.add("wrong-bg");
+          feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-600"></i> Resposta Errada`;
+          feedbackContent.innerHTML = `<strong>Resumo de Melhoria:</strong><br>${q.why}`;
+        }
+
+        // Scroll suave para ver o feedback
+        setTimeout(() => {
+          feedbackArea.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
+      }
+
+      function nextQuestion() {
+        if (currentQuestionIndex < questionsDB.length - 1) {
+          currentQuestionIndex++;
+          renderQuestion();
+        } else {
+          finishQuiz();
+        }
+      }
+
+      function finishQuiz() {
+        showView("view-result");
+        document.getElementById("final-score").innerText = score;
+
+        const msg = document.getElementById("final-message");
+        // Limpa classes anteriores de cor
+        msg.className =
+          "text-sm px-4 py-2 rounded-lg inline-block border font-medium";
+
+        if (score >= 18) {
+          msg.innerText = "Excelente! Você dominou os detalhes técnicos.";
+          msg.classList.add(
+            "bg-green-100",
+            "text-green-800",
+            "border-green-200"
+          );
+        } else if (score >= 14) {
+          msg.innerText = "Muito bom! Mas atenção às pegadinhas de sintaxe.";
+          msg.classList.add("bg-blue-100", "text-blue-800", "border-blue-200");
+        } else {
+          msg.innerText =
+            "Recomendo revisar a seção de Metodologia e tentar novamente.";
+          msg.classList.add(
+            "bg-orange-100",
+            "text-orange-800",
+            "border-orange-200"
+          );
+        }
+      }
+
+      // Inicialização de segurança
+      window.onload = function () {
+        // Garante que a Home é a primeira coisa a aparecer
+        goHome();
+      };
+    </script>
+  </body>
+</html>
